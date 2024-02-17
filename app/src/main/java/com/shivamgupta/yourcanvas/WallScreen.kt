@@ -24,6 +24,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -32,23 +34,30 @@ import kotlin.math.roundToInt
 
 @Composable
 fun WallScreen(
-    backgroundImageUri: Uri?
+    backgroundImageUri: Uri?,
+    screenColor: Color,
+    textStyle: TextStyle = MaterialTheme.typography.headlineSmall.copy(
+        color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center
+    ),
+    hint: String = "Click here to add text",
+    hintAlpha: Float = 0.5F
 ) {
     Box(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(screenColor),
         contentAlignment = Alignment.Center
     ) {
         var offsetX by rememberSaveable { mutableFloatStateOf(0F) }
         var offsetY by rememberSaveable { mutableFloatStateOf(0F) }
         var text by rememberSaveable { mutableStateOf("") }
-        //var textSize by rememberSaveable{ mutableFloatStateOf(MaterialTheme.typography.headlineSmall.fontSize.value) }
 
         backgroundImageUri?.let {
             Image(
                 modifier = Modifier.fillMaxSize(),
                 painter = rememberAsyncImagePainter(model = it),
-                contentDescription = null
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds
             )
         }
 
@@ -71,9 +80,7 @@ fun WallScreen(
                 onValueChange = {
                     text = it
                 },
-                textStyle = MaterialTheme.typography.headlineSmall.copy(
-                    color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center
-                ),
+                textStyle = textStyle,
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
                 decorationBox = { innerTextField ->
                     Box(
@@ -83,11 +90,9 @@ fun WallScreen(
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .alpha(alpha = 0.5F),
-                                text = "Click here to add text",
-                                style = MaterialTheme.typography.headlineSmall.copy(
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                ), textAlign = TextAlign.Center
+                                    .alpha(alpha = hintAlpha),
+                                text = hint,
+                                style = textStyle
                             )
                         }
                     }
